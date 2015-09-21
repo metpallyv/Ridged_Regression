@@ -19,6 +19,7 @@ def load_csv(file):
     #print(X)
     return (X)
 
+#randonly shuffle the array
 def random_numpy_array(ar):
     np.random.shuffle(ar)
     #print(arr)
@@ -26,6 +27,7 @@ def random_numpy_array(ar):
     #print(arr)
     return arr
 
+#normalize the data using z-score normalization
 def centered_X(matrix,me):
     with np.errstate(divide='ignore'):
         a = matrix
@@ -36,7 +38,6 @@ def centered_X(matrix,me):
             for i in range(tmp):
                 mean_list.append(np.mean(a[:,i]))
             return b,mean_list
-
         else:
             res = np.empty(shape=[a.shape[0],0])
             for i in range(a.shape[1]):
@@ -54,6 +55,8 @@ def centered_Y(Y):
     b = np.apply_along_axis(lambda x: (x-np.mean(x)),0,Y)
     return b
 
+#divide the dataset into 90% training and 10% test and return training features,
+#training class labels and test features and test class labels 
 def generate_set(X,poly):
     X = np.array(X,dtype=float)
     Y = X[:,-1]
@@ -93,18 +96,18 @@ def generate_set(X,poly):
         training_class_names_list.append(y_training)
         start = end
         end = end+num_test
-
     return test_attri_list,test_class_names_list,training_attri_list,training_class_names_list
 
+#normal equation function
 def normal_equation(x,y,lam):
     # calculate weight vector with the formula inverse of(x.T* x)*x.T*y
     a = dot(x.transpose(),x)
     #z = inv(dot(x.transpose(), x)+ lam*np.identity(x.shape[0]))
     z = inv(a+lam*np.identity(a.shape[0]))
     theta = dot(dot(z, x.transpose()), y)
-
     return theta
 
+#compute the root mean sqaured error
 def compute_rmse_sse(x,y,theta):
     m = y.size
     #y = map(lambda x: x+np.mean(x),y)
@@ -125,17 +128,14 @@ if __name__ == "__main__":
         #Divide the data into 10 cross training and test data
         test_x,test_y,training_x,training_y = generate_set(num_arr,poly)
         #Apply normal form equation for all 10 cross data
-
         a = np.arange(0,10.2,0.2)
         #print(a)
         trainingRMSEValues = []
         testRMSEValues = []
-
         for l in a:
             rmse_training = []
             rmse_test = []
             for i in range(10):
-
                 theta = normal_equation(training_x[i],training_y[i],l)
                 #calculate the rmse and sse for each fold
                 rmse1,see2 = compute_rmse_sse(training_x[i],training_y[i],theta)
@@ -144,15 +144,12 @@ if __name__ == "__main__":
                 rmse_test.append(rmse2)
                 #print "RMSE for training",rmse1
                 #print "RMSE for test",rmse2
-
             meanTrainingRMSE = sum(rmse_training)/float(10)
             trainingRMSEValues.append(meanTrainingRMSE)
             meanTestingRMSE = sum(rmse_test)/float(10)
             testRMSEValues.append(meanTestingRMSE)
-
             print "Average RMSE for Training for lamba:",l,"is",sum(rmse_training)/float(len(rmse_training))
             print "Average RMSE for Test for lamba: ",l,"is",sum(rmse_test)/float(len(rmse_test))
-
         plt.suptitle("Ridged regression Data plot")
         plt.plot(a,trainingRMSEValues)
         plt.ylabel("traning RMSE")

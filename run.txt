@@ -1,0 +1,4 @@
+To run the code, run the below steps
+
+1. ridge_regression.py  sinData_Train.csv 4
+2. ridge_regression.py  sinData_Train.csv 9
